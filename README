@@ -1,0 +1,6 @@
+This application:
+
+-Receives protobuf messages from an Android phone (or anything really), describing geographical
+ points pulled from the GPS, as well as timestamped pictures
+-Pushes blog posts to a Tumblr blog, using their API
+-Serves out KML files, read by Google maps on the Tumblr blog
