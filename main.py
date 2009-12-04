@@ -80,7 +80,7 @@ class KmlHandler(HandlerBase):
 </kml>"""
 
 		self.response.out.write(kml)
-
+ 	
 #
 # Running the application
 #
