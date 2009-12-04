@@ -16,52 +16,6 @@ from google.appengine.api import users
 def sup(self):
 	return super(self.__class__, self)
 	
-
-#
-# The index page
-#
-class IndexHandler(HandlerBase):
-	def get(self):				
-		posts = db.GqlQuery("SELECT * FROM BlogPost WHERE published = true ORDER BY date DESC")
-		
-		values = {
-			'title': 'Scott\'s Bike Blog',
-			'body': 'map.html',
-			'posts': posts
-		}
-		
-		sup(self).write_template(values)
-
-#
-# The submit page
-#
-class SubmitHandler(HandlerBase):
-	def get(self):
-		# validate the freakin' user as administrator
-		current_user = users.get_current_user()
-		if not users.is_current_user_admin():
-			self.redirect(users.create_login_url(self.request.uri))
-			return
-			
-		values = {
-			'title': 'Scott\'s Bike Blog',
-			'body': 'submit.html'
-		}
-		
-		sup(self).write_template(values)
-		
-	def post(self):		
-		current_user = users.get_current_user()
-		if not users.is_current_user_admin():
-			self.redirect(users.create_login_url(self.request.uri))
-			return		
-			
-		post = models.BlogPost(author = current_user, content =	self.request.get('content'), 
-			published = self.request.get('published') != "")
-		post.put()
-			
-		self.response.out.write("Thanks for posting")
-		
 #
 # The data upload page
 #
@@ -133,9 +87,7 @@ class KmlHandler(HandlerBase):
 def main():
 	application = webapp.WSGIApplication(
 		[
-			('/', IndexHandler),
 			('/kml', KmlHandler),
-			('/submit', SubmitHandler),
 			('/upload', DataUploadHandler)
 		],
 		debug=True)
