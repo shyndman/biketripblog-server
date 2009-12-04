@@ -1,0 +1,17 @@
+<div id="map" style="width: 500px; height: 400px"></div>
+<script type="text/javascript">
+	var map, geoXml;
+	
+	geoXml = new GGeoXml("http://biketripblog.appspot.com/kml?snaz");
+	
+	$(document).ready(function(){
+		if (GBrowserIsCompatible()) {
+			map = new GMap2(document.getElementById("map")); 
+			map.setCenter(new GLatLng(37.4419, -122.1419), 13);
+			map.setUIToDefault();
+			map.addOverlay(geoXml);
+			
+			geoXml.gotoDefaultViewport(map);
+		}
+	});
+</script>
