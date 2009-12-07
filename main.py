@@ -4,6 +4,8 @@ import cgi
 import wsgiref.handlers
 import models
 import bike_pb2
+import yaml
+import logging
 from base import HandlerBase
 from datetime import datetime
 from google.appengine.ext import webapp
@@ -82,9 +84,19 @@ class KmlHandler(HandlerBase):
 		self.response.out.write(kml)
  
 #
+# Define a configuration object
+#
+CONFIG = None
+
+#
 # Running the application
 #
 def main():
+	config_file = open('config.yaml', 'r')
+	CONFIG = yaml.load(config_file.read())
+	
+	logging.info(CONFIG)
+	
 	application = webapp.WSGIApplication(
 		[
 			('/kml', KmlHandler),
