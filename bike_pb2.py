@@ -58,7 +58,7 @@ _POINT = descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='timeStamp', full_name='ca.scotthyndman.bike.data.Point.timeStamp', index=6,
+      name='ts', full_name='ca.scotthyndman.bike.data.Point.ts', index=6,
       number=7, type=3, cpp_type=2, label=1,
       default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -80,23 +80,23 @@ _PHOTO = descriptor.Descriptor(
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
-      name='id', full_name='ca.scotthyndman.bike.data.Photo.id', index=0,
-      number=1, type=3, cpp_type=2, label=2,
-      default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='name', full_name='ca.scotthyndman.bike.data.Photo.name', index=1,
+      name='caption', full_name='ca.scotthyndman.bike.data.Photo.caption', index=0,
       number=2, type=9, cpp_type=9, label=1,
       default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='contents', full_name='ca.scotthyndman.bike.data.Photo.contents', index=2,
+      name='contents', full_name='ca.scotthyndman.bike.data.Photo.contents', index=1,
       number=3, type=12, cpp_type=9, label=1,
       default_value="",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='ts', full_name='ca.scotthyndman.bike.data.Photo.ts', index=2,
+      number=4, type=3, cpp_type=2, label=1,
+      default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -109,23 +109,37 @@ _PHOTO = descriptor.Descriptor(
   options=None)
 
 
-_UPLOADPACKAGE = descriptor.Descriptor(
-  name='UploadPackage',
-  full_name='ca.scotthyndman.bike.data.UploadPackage',
+_POST = descriptor.Descriptor(
+  name='Post',
+  full_name='ca.scotthyndman.bike.data.Post',
   filename='bike.proto',
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
-      name='points', full_name='ca.scotthyndman.bike.data.UploadPackage.points', index=0,
+      name='points', full_name='ca.scotthyndman.bike.data.Post.points', index=0,
       number=1, type=11, cpp_type=10, label=3,
       default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='photos', full_name='ca.scotthyndman.bike.data.UploadPackage.photos', index=1,
+      name='photos', full_name='ca.scotthyndman.bike.data.Post.photos', index=1,
       number=2, type=11, cpp_type=10, label=3,
       default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='title', full_name='ca.scotthyndman.bike.data.Post.title', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='body', full_name='ca.scotthyndman.bike.data.Post.body', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -138,8 +152,8 @@ _UPLOADPACKAGE = descriptor.Descriptor(
   options=None)
 
 
-_UPLOADPACKAGE.fields_by_name['points'].message_type = _POINT
-_UPLOADPACKAGE.fields_by_name['photos'].message_type = _PHOTO
+_POST.fields_by_name['points'].message_type = _POINT
+_POST.fields_by_name['photos'].message_type = _PHOTO
 
 class Point(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
@@ -149,7 +163,7 @@ class Photo(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _PHOTO
 
-class UploadPackage(message.Message):
+class Post(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _UPLOADPACKAGE
+  DESCRIPTOR = _POST
 

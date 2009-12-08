@@ -1,6 +1,16 @@
 from google.appengine.ext import db
 
+class Post(db.Model):
+	'''A blog post'''
+	title = db.StringProperty() 
+	body = db.TextProperty()
+	ts = db.DateTimeProperty(auto_now_add=True)
+
 class Point(db.Model):
+	'''A geographical point, associated with a blog post'''
+	
+	# Reference to the blog post
+	post = db.ReferenceProperty(Post)
 	
 	#required int64 id 			= 1;
 	id = db.IntegerProperty()
@@ -21,10 +31,17 @@ class Point(db.Model):
 	#optional int64 timeStamp 	= 7;
 	ts = db.DateTimeProperty()
 
-class BlogPost(db.Model):
-
-	author = db.UserProperty()
-	subject = db.StringProperty() 
-	content = db.TextProperty()
-	date = db.DateTimeProperty(auto_now_add=True)
-	published = db.BooleanProperty()
+class Photo(db.Model):
+	'''A photo, associated with a blog post'''
+	
+	# Reference to the blog post
+	post = db.ReferenceProperty(Post)
+	
+	# Caption
+	caption = db.StringProperty()
+	
+	# The bytes of the image
+	contents = db.BlobProperty()
+	
+	# Time the photo was taken
+	ts = db.DateTimeProperty()

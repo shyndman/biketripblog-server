@@ -12,48 +12,96 @@ from google.appengine.ext import webapp
 from google.appengine.ext import db
 from google.appengine.api import users
 
-#
-# Utility function for returning super.
-#
 def sup(self):
+	'''Utility function for returning super.'''
+	
 	return super(self.__class__, self)
 	
-#
-# The data upload page
-#
+def get_config():
+	'''Gets the configuration as a dict'''
+	
+	config_file = open('config.yaml', 'r')
+	return yaml.load(config_file.read())
+	
 class DataUploadHandler(HandlerBase):
+	'''The data upload page'''
+	
 	def post(self):
-		pbStr = self.request.body
-		uploadPkg = bike_pb2.UploadPackage()
-		uploadPkg.ParseFromString(pbStr)
+		'''Handles a post message containing a Google Protobuf'''
 		
-		self.response.out.write(str(uploadPkg))
-		
-		for pt in uploadPkg.points:
-			model_pt = models.Point(
-				id = pt.id, 
-				geo_pt = db.GeoPt(pt.latitude, pt.longitude), 
-				bearing = pt.bearing,
-				temperature = pt.temperature,
-				ts = datetime.fromtimestamp(pt.timeStamp)
-			)
-				
-			# Add altitude if we have it
-			if pt.HasField('altitude'):
-				model_pt.altitude = pt.altitude
-				
-			# Put the thing in the datastore
-			model_pt.put()
+		uploaded_post = self.read_post_from_request(self.request.body)
 
-#
-# This is a KML handler
-#
+		post = models.Post(title=uploaded_post.title, body=uploaded_post.body)		
+		post.put()
+		
+		points = []
+		for pt in uploaded_post.points:
+			points.append(self.add_point(post, pt))
+			
+		photos = []
+		for photo in uploaded_post.photos:
+			photos.append(self.add_photo(post, photo))
+			
+	def read_post_from_request(self, body):
+		'''Reads in a post from the PB'''	
+		
+		uploaded_post = bike_pb2.Post()
+		uploaded_post.ParseFromString(body)		
+		
+		logging.info("Read %s" % str(uploaded_post))
+		
+		return uploaded_post
+			
+	def add_point(self, post, pt):
+		'''Adds a point to the datastore'''
+		
+		model_pt = models.Point(
+			id = pt.id, 
+			post = post,
+			geo_pt = db.GeoPt(pt.latitude, pt.longitude), 
+			bearing = pt.bearing,
+			temperature = pt.temperature,
+			ts = datetime.fromtimestamp(pt.ts)
+		)
+			
+		# Add altitude if we have it
+		if pt.HasField('altitude'):
+			model_pt.altitude = pt.altitude
+			
+		# Put the thing in the datastore
+		model_pt.put()
+		
+		return model_pt
+			
+	def add_photo(self, post, photo):
+		'''Adds a photo to the datastore'''
+		
+		model_photo = models.Photo(
+			post = post,
+			contents = db.Blob(photo.contents),
+			ts = datetime.fromtimestamp(photo.ts)
+		)
+		
+		if photo.HasField('caption'):
+			model_photo.caption = photo.caption
+			
+		model_photo.put()
+		
+		return model_photo
+
 class KmlHandler(HandlerBase):
+	'''This is a KML handler'''
+
 	def get(self):
+		
+		if self.request.get('post') == '':
+			logger.error("KmlHandler was not provided post parameter")
+			return
+		
 		points = db.GqlQuery("SELECT * FROM Point ORDER BY ts")
 		
 		self.response.headers["Content-Type"] = "application/vnd.google-earth.kml+xml"
-		kml = """<?xml version="1.0" encoding="UTF-8"?>
+		kml = '''<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2">
 	<Document>
 		<Style id="geoPointLine">
@@ -68,37 +116,32 @@ class KmlHandler(HandlerBase):
 		<Placemark>
 			<styleUrl>#geoPointLine</styleUrl>
 			<LineString>
-				<coordinates>"""
+				<coordinates>'''
 		
 		# Print out each of the points (for some reason, lon then lat)
 		for pt in points:
 			kml += (str(pt.geo_pt.lon) + "," + str(pt.geo_pt.lat) + ",2357\n")
 			
-		kml += """
+		kml += '''
 				</coordinates>
 			</LineString>
 		</Placemark>
 	</Document>
-</kml>"""
+</kml>'''
 
 		self.response.out.write(kml)
- 
-#
-# Define a configuration object
-#
-CONFIG = None
-
-#
-# Running the application
-#
-def main():
-	config_file = open('config.yaml', 'r')
-	CONFIG = yaml.load(config_file.read())
 	
-	logging.info(CONFIG)
-	
+class IndexHandler(HandlerBase):
+	'''Handles the index'''
+	def get(self):
+		self.response.out.write("up and running!")
+		
+		
+def main():	
+	'''Runs the app'''
 	application = webapp.WSGIApplication(
 		[
+			('/', IndexHandler),
 			('/kml', KmlHandler),
 			('/upload', DataUploadHandler)
 		],
@@ -106,4 +149,4 @@ def main():
 	wsgiref.handlers.CGIHandler().run(application)
 
 if __name__ == '__main__':
-  main()
+	main()
