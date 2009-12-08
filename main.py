@@ -42,6 +42,11 @@ class DataUploadHandler(HandlerBase):
 		for photo in uploaded_post.photos:
 			photos.append(self.add_photo(post, photo))
 			
+		push_blog_post(post, points, photos)
+			
+	def push_blog_post(self, post, points, photos):
+		pass
+			
 	def read_post_from_request(self, body):
 		'''Reads in a post from the PB'''	
 		
@@ -135,8 +140,9 @@ class IndexHandler(HandlerBase):
 	'''Handles the index'''
 	def get(self):
 		self.response.out.write("up and running!")
+		# TODO - Do something cooler here - if only redirect
 		
-		
+	
 def main():	
 	'''Runs the app'''
 	application = webapp.WSGIApplication(
