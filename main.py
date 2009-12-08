@@ -6,7 +6,6 @@ import models
 import bike_pb2
 import yaml
 import logging
-from base import HandlerBase
 from datetime import datetime
 from google.appengine.ext import webapp
 from google.appengine.ext import db
@@ -23,7 +22,7 @@ def get_config():
 	config_file = open('config.yaml', 'r')
 	return yaml.load(config_file.read())
 	
-class DataUploadHandler(HandlerBase):
+class DataUploadHandler(webapp.RequestHandler):
 	'''The data upload page'''
 	
 	def post(self):
@@ -94,7 +93,7 @@ class DataUploadHandler(HandlerBase):
 		
 		return model_photo
 
-class KmlHandler(HandlerBase):
+class KmlHandler(webapp.RequestHandler):
 	'''This is a KML handler'''
 
 	def get(self):
@@ -136,7 +135,7 @@ class KmlHandler(HandlerBase):
 
 		self.response.out.write(kml)
 	
-class IndexHandler(HandlerBase):
+class IndexHandler(webapp.RequestHandler):
 	'''Handles the index'''
 	def get(self):
 		self.response.out.write("up and running!")
